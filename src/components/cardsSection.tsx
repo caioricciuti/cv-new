@@ -2,7 +2,6 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
 import { Button } from "@/components/ui/button";
-import { MailIcon, RefreshCw } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +11,22 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPinIcon, PhoneIcon, InfoIcon, MailOpenIcon } from "lucide-react";
+import {
+  MapPinIcon,
+  MailOpenIcon,
+  RefreshCw,
+  RocketIcon,
+  Telescope,
+} from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+
+import logo from "@/assets/me.jpeg";
 
 interface CardProps {
   title: string;
@@ -32,7 +46,8 @@ const cardsData: CardProps[] = [
     icon: <MapPinIcon className="h-6 w-6" />,
     dialogContent: {
       title: "Location",
-      description: "Find us at the address below or on the map.",
+      description:
+        "I'm based in Spain, more specifically in Palma de Mallorca! 🌴",
       content: (
         <div className="grid gap-4">
           <div className="flex items-center gap-4">
@@ -40,52 +55,51 @@ const cardsData: CardProps[] = [
               <MapPinIcon className="h-6 w-6" />
             </div>
             <div>
-              <p className="font-semibold">123 Main St</p>
-              <p className="text-sm text-muted-foreground">
-                Anytown, USA 12345
-              </p>
+              <p className="font-semibold">Palma de Mallorca</p>
+              <p className="text-sm text-muted-foreground">Spain 🇪🇸</p>
             </div>
           </div>
-          <div className="aspect-video rounded-md overflow-hidden">
-            <img
-              src="/api/placeholder/600/400"
-              alt="Location Map"
-              className="object-cover w-full h-full"
-            />
+          <div className="m-auto">
+            <Carousel>
+              <CarouselContent>
+                <CarouselItem>
+                  <img src={logo} className="max-h-52 m-auto" />
+                </CarouselItem>
+                <CarouselItem>
+                  <img src={logo} className="max-h-52 m-auto" />
+                </CarouselItem>
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
           </div>
         </div>
       ),
     },
   },
   {
-    title: "Email",
-    description: "caio.ricciuti@outlook.com",
-    icon: <MailIcon className="h-6 w-6" />,
+    title: "Get in Touch",
+    description: "I'd love to hear from you!",
+    icon: <RocketIcon className="h-6 w-6" />,
     dialogContent: {
-      title: "Contact",
-      description: "Get in touch with us using the information below.",
+      title: "Let's talk!",
+      description:
+        "I'm sure you're thinking, who in the world still uses email? 🤔... Try me!",
       content: (
         <div className="grid gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <PhoneIcon className="h-6 w-6" />
-            </div>
-            <div>
-              <p className="font-semibold">555-1234-5678</p>
-              <p className="text-sm text-muted-foreground">
-                Monday - Friday, 9am - 5pm
-              </p>
-            </div>
-          </div>
           <div className="flex items-center gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
               <MailOpenIcon className="h-6 w-6" />
             </div>
             <div>
-              <p className="font-semibold">info@example.com</p>
-              <p className="text-sm text-muted-foreground">
-                We aim to respond within 1 business day.
-              </p>
+              <a
+                href="mailto:caio.ricciuti@outlook.com"
+                className="font-semibold"
+              >
+                <p className="text-sm text-muted-foreground">
+                  Write something nice, would you? 😊
+                </p>
+              </a>
             </div>
           </div>
         </div>
@@ -93,11 +107,11 @@ const cardsData: CardProps[] = [
     },
   },
   {
-    title: "Info",
-    description: "A little bit about me.",
-    icon: <InfoIcon className="h-6 w-6" />,
+    title: "About Me",
+    description: "Why meee?!",
+    icon: <Telescope className="h-6 w-6" />,
     dialogContent: {
-      title: "Info",
+      title: "A little bit about me",
       description: "Learn more about our business and services.",
       content: (
         <div className="grid gap-4">
@@ -226,7 +240,7 @@ const InteractiveRevealComponent = () => {
           open={activeDialog === card.title}
           onOpenChange={(open) => setActiveDialog(open ? card.title : null)}
         >
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="rounded-sm max-w-[90%] md:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>{card.dialogContent.title}</DialogTitle>
               <DialogDescription>
