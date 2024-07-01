@@ -1,41 +1,78 @@
 import React, { useRef, useState, useEffect } from "react";
 import * as THREE from "three";
-import { Canvas, useFrame, extend, useThree } from "@react-three/fiber";
-import { Text, OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  BarChart2,
+  Globe,
+  PieChart,
+} from "lucide-react";
+import "tailwindcss/tailwind.css";
+
+const getPeriodStringWithDays = (
+  startYear: number,
+  startMonth: number,
+  endYear?: number,
+  endMonth?: number
+): string => {
+  const startDate = new Date(startYear, startMonth - 1, 1); // Month is 0-indexed
+  let endDate: Date;
+
+  if (endYear && endMonth) {
+    // If end year and month are provided, use the last day of that month
+    endDate = new Date(endYear, endMonth, 0); // This gives the last day of the previous month
+  } else {
+    // Otherwise, use the current date
+    endDate = new Date();
+  }
+
+  // Calculate the difference in time
+  const differenceInTime = endDate.getTime() - startDate.getTime();
+  // Calculate the difference in days
+  const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+  return `${differenceInDays} days`;
+};
 
 extend({ OrbitControls });
 
 interface ExperienceData {
   company: string;
   position: string;
+  days?: string;
   period: string;
   description: string[];
+  icon: JSX.Element;
 }
 
 const experienceData: ExperienceData[] = [
   {
     company: "Synatix GmbH",
-    position: "Marketing Technologist",
-    period: "January 2021 - Present",
+    position: "Marketing Technologist / Data Engineer",
+    period: `February 2021 - Present`,
+    days: `${getPeriodStringWithDays(2021, 2)} and counting...`,
     description: [
-      "Develop and maintain applications and services",
-      "Manage servers hosting services and apps",
-      "Utilize Google Cloud Platform services",
-      "Implement Google Tag Manager (client-side and server-side)",
-      "Integrate APIs into applications",
-      "Create data visualizations using Google Data Studio",
-      "Use Docker and Docker Compose for containerization",
-      "Leverage AWS (S3, CloudFront) for file storage and content delivery",
+      "Develop and maintain applications (NodeJS).",
+      "GCP - Big Query, GCS, Cloud fuctions, app engine...",
+      "API integration.",
+      "Docker and Docker Compose for containerization.",
+      "Leverage AWS (S3, CloudFront) for file storage and content delivery.",
+      "Implement CI/CD pipelines (Gitlab CI/CD).",
+      "Data analysis and visualization using Python (Pandas, Matplotlib, Seaborn).",
+      "Looker Studio for data visualization and analysis.",
+      "Deep Analisis of user behavior, LTV, CAC, and other KPIs.",
     ],
+    icon: <Globe className="h-6 w-6 text-indigo-500" />,
   },
   {
     company: "Logitravel Group",
     position: "Marketing Manager PT/BR",
-    period: "February 2019 - January 2021",
+    period: `February 2019 - January 2021`,
+    days: `${getPeriodStringWithDays(2019, 1, 2021, 1)} - Yep, I stick around!`,
     description: [
       "Develop and execute strategic marketing plans for Portuguese and Brazilian markets",
       "Conduct market analysis",
@@ -45,11 +82,18 @@ const experienceData: ExperienceData[] = [
       "Utilize Google Tools (Analytics, Search Console, AdWords)",
       "Implement technical solutions (UTMs, parameters, product feeds)",
     ],
+    icon: <PieChart className="h-6 w-6 text-indigo-500" />,
   },
   {
     company: "Consulor, Freelance",
     position: "Business/Corporate Strategist",
-    period: "June 2014 - January 2019",
+    period: `June 2014 - January 2019`,
+    days: `${getPeriodStringWithDays(
+      2014,
+      6,
+      2019,
+      1
+    )} - 4 years and 7 months!`,
     description: [
       "Provide expertise to help businesses achieve goals and solve problems",
       "Work with clients to understand needs and define project scope",
@@ -58,10 +102,11 @@ const experienceData: ExperienceData[] = [
       "Assist with business internationalization and expansion",
       "Engage in B2B sales",
     ],
+    icon: <BarChart2 className="h-6 w-6 text-indigo-500" />,
   },
 ];
 
-const Globe = () => {
+const GlobeComponent = () => {
   const meshRef = useRef<THREE.Mesh>(null!);
   const geoRef = useRef<THREE.BufferGeometry>(null!);
 
@@ -119,9 +164,13 @@ const ExperienceCard: React.FC<{
   return (
     <Card className="w-full max-w-4xl bg-white/10 backdrop-blur-md relative">
       <CardContent className="p-6">
-        <h3 className="text-2xl font-bold mb-2">{data.company}</h3>
+        <div className="flex items-center mb-2">
+          {data.icon}
+          <h3 className="text-2xl font-bold ml-2">{data.company}</h3>
+        </div>
         <h4 className="text-xl mb-1">{data.position}</h4>
-        <p className="text-sm text-gray-400 mb-4">{data.period}</p>
+        <p className="text-sm text-gray-400 mb-2">{data.period}</p>
+        <p className="text-xs text-primary/50 mb-4">{data.days}</p>
         <ul className="list-disc pl-5 space-y-1">
           {data.description.map((item, index) => (
             <li key={index} className="text-sm">
@@ -130,22 +179,18 @@ const ExperienceCard: React.FC<{
           ))}
         </ul>
       </CardContent>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full"
-        onClick={onPrev}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full"
-        onClick={onNext}
-      >
-        <ChevronRight className="h-4 w-4" />
-      </Button>
+      <div className="flex justify-between">
+        <div className="p-2">
+          <Button variant="outline" size="icon" onClick={onPrev}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="p-2">
+          <Button variant="outline" size="icon" onClick={onNext}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </Card>
   );
 };
@@ -175,7 +220,7 @@ const ExperienceSection: React.FC = () => {
           enablePan={false}
           enableRotate={true}
         />
-        <Globe />
+        <GlobeComponent />
       </Canvas>
 
       <div className="absolute inset-0 flex items-center justify-center">
@@ -184,7 +229,7 @@ const ExperienceSection: React.FC = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.1 }}
           className="w-full max-w-4xl px-4"
         >
           <ExperienceCard

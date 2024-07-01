@@ -1,7 +1,9 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import { AnimatePresence, motion } from "framer-motion";
-import { CanvasRevealEffect } from "@/components/ui/canvas-reveal-effect";
 import { Button } from "@/components/ui/button";
+import THREE from "three";
 import {
   Dialog,
   DialogContent,
@@ -26,7 +28,12 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-import logo from "@/assets/me.jpeg";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+import mallorca from "/mallorca.jpg";
+import mallorca2 from "/mallorca2.jpg";
+import mallorca3 from "/mallorca3.jpg";
+import mallorca4 from "/mallorca4.jpg";
 
 interface CardProps {
   title: string;
@@ -63,14 +70,18 @@ const cardsData: CardProps[] = [
             <Carousel>
               <CarouselContent>
                 <CarouselItem>
-                  <img src={logo} className="max-h-52 m-auto" />
+                  <img src={mallorca} className="rounded-md" />
                 </CarouselItem>
                 <CarouselItem>
-                  <img src={logo} className="max-h-52 m-auto" />
+                  <img src={mallorca2} className="rounded-md" />
+                </CarouselItem>
+                <CarouselItem>
+                  <img src={mallorca3} className="rounded-md" />
+                </CarouselItem>
+                <CarouselItem>
+                  <img src={mallorca4} className="rounded-md" />
                 </CarouselItem>
               </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
             </Carousel>
           </div>
         </div>
@@ -97,7 +108,7 @@ const cardsData: CardProps[] = [
                 className="font-semibold"
               >
                 <p className="text-sm text-muted-foreground">
-                  Write something nice, would you? 😊
+                  Waiting for your message! 😊
                 </p>
               </a>
             </div>
@@ -114,26 +125,63 @@ const cardsData: CardProps[] = [
       title: "A little bit about me",
       description: "Learn more about our business and services.",
       content: (
-        <div className="grid gap-4">
-          <p>
-            We are a family-owned business that has been serving the community
-            for over 20 years. Our mission is to provide high-quality products
-            and exceptional customer service.
-          </p>
-          <p>
-            In addition to our retail location, we also offer online ordering
-            and delivery options for your convenience. We proudly source our
-            products from local and sustainable suppliers whenever possible.
-          </p>
-          <p>
-            Thank you for considering us for your needs. We look forward to
-            serving you!
-          </p>
+        <div className="grid gap-4 max-h-[80vh]">
+          <ScrollArea className="h-[60vh] w-full">
+            <p>
+              I'm a Marketing Technologist and Data Engineer currently working
+              at Synatix GmbH since February 2021. With a carrer of{" "}
+              {new Date().getFullYear() - 2014} + years of experience, I've
+              developed a strong foundation in both marketing technology and
+              data engineering, I love to work with data and technology to drive
+              business decisions.
+            </p>
+            <p>
+              My expertise lies in developing and maintaining applications, with
+              a focus on leveraging cloud technologies. I'm proficient in Google
+              Cloud Platform (GCP), utilizing services like BigQuery, Cloud
+              Storage, Cloud Functions, and App Engine. I also have experience
+              with AWS, particularly S3 and CloudFront for efficient file
+              storage and content delivery.
+            </p>
+            <p>
+              In my current role, I've been deeply involved in API integrations,
+              containerization using Docker and Docker Compose, and implementing
+              CI/CD pipelines with Gitlab CI/CD. I'm passionate about data
+              analysis and visualization, using Python libraries such as Pandas,
+              Matplotlib, and Seaborn, as well as Looker Studio for creating
+              insightful dashboards.
+            </p>
+            <p>
+              One of my key strengths is conducting deep analysis of user
+              behavior, focusing on crucial metrics like Lifetime Value (LTV),
+              Customer Acquisition Cost (CAC), and other important KPIs. This
+              analytical approach allows me to provide valuable insights that
+              drive marketing strategies and business decisions.
+            </p>
+          </ScrollArea>
         </div>
       ),
     },
   },
 ];
+
+const Sphere = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame(({ clock }) => {
+    if (meshRef.current) {
+      meshRef.current.rotation.x = clock.getElapsedTime() * 0.2;
+      meshRef.current.rotation.y = clock.getElapsedTime() * 0.4;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef} scale={2}>
+      <sphereGeometry args={[1, 32, 32]} />
+      <meshStandardMaterial color="hotpink" wireframe />
+    </mesh>
+  );
+};
 
 const InteractiveRevealComponent = () => {
   const [revealed, setRevealed] = useState(false);
@@ -204,9 +252,49 @@ const InteractiveRevealComponent = () => {
             </div>
           </>
         ) : (
-          <p className="text-2xl md:text-3xl font-medium text-center text-white relative z-20 max-w-2xl mx-auto">
-            {hasBeenHovered ? "Click to Reveal" : "Hover to Reveal"}
-          </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="relative z-20 text-center"
+          >
+            <motion.p
+              className="text-4xl md:text-5xl font-bold text-white mb-4"
+              initial={{ y: -20 }}
+              animate={{ y: 0 }}
+              transition={{ type: "spring", stiffness: 200 }}
+            >
+              {hasBeenHovered ? "See again?!" : "There is more to see!"}
+            </motion.p>
+            <motion.div
+              className="flex justify-center items-center space-x-8 mt-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1, scale: 1.1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <motion.span
+                className="text-5xl mt-4"
+                animate={{ scale: [1, 1.5, 1] }}
+                transition={{ repeat: Infinity, duration: 2.5 }}
+              >
+                🎉
+              </motion.span>
+              <motion.span
+                className="text-5xl mt-4"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
+              >
+                🚀
+              </motion.span>
+              <motion.span
+                className="text-5xl mt-4"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5, delay: 0.6 }}
+              >
+                🌟
+              </motion.span>
+            </motion.div>
+          </motion.div>
         )}
 
         <AnimatePresence>
@@ -217,16 +305,12 @@ const InteractiveRevealComponent = () => {
               exit={{ opacity: 0 }}
               className="absolute inset-0"
             >
-              <CanvasRevealEffect
-                animationSpeed={5}
-                containerClassName="bg-transparent"
-                colors={[
-                  [59, 130, 246],
-                  [139, 92, 246],
-                ]}
-                opacities={[0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.4, 0.4, 0.4, 1]}
-                dotSize={2}
-              />
+              <Canvas className="w-full h-full">
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} />
+                <Sphere />
+                <OrbitControls enableZoom={false} />
+              </Canvas>
             </motion.div>
           )}
         </AnimatePresence>
