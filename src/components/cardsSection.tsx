@@ -24,8 +24,6 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -123,40 +121,64 @@ const cardsData: CardProps[] = [
     icon: <Telescope className="h-6 w-6" />,
     dialogContent: {
       title: "A little bit about me",
-      description: "Learn more about our business and services.",
+      description: "Overview of my professional journey! 🚀",
       content: (
         <div className="grid gap-4 max-h-[80vh]">
-          <ScrollArea className="h-[60vh] w-full">
-            <p>
-              I'm a Marketing Technologist and Data Engineer currently working
-              at Synatix GmbH since February 2021. With a carrer of{" "}
-              {new Date().getFullYear() - 2014} + years of experience, I've
-              developed a strong foundation in both marketing technology and
-              data engineering, I love to work with data and technology to drive
-              business decisions.
+          <ScrollArea className="h-[60vh] w-full p-2">
+            <p className="mb-4">
+              I'm a Data Engineer and Team Leader at Synatix GmbH, where I've
+              been driving innovation since February 2021. With a career
+              spanning {new Date().getFullYear() - 2014}+ years, I've cultivated
+              a unique blend of expertise in data engineering, cloud
+              technologies, and marketing technology. My passion lies in
+              harnessing the power of data and cutting-edge tech to fuel
+              data-driven decision-making and business growth.
+            </p>
+            <p className="mb-4">
+              My technical prowess centers on developing and optimizing robust
+              data pipelines and applications. I'm highly proficient in Google
+              Cloud Platform (GCP), where I leverage services like BigQuery,
+              Cloud Storage, Cloud Functions, and App Engine to architect
+              scalable, efficient data solutions. My experience extends to
+              Amazon Web Services (AWS), particularly S3 and CloudFront,
+              enabling me to design comprehensive cloud-native ecosystems for
+              data storage, processing, and delivery.
+            </p>
+            <p className="mb-4">
+              In my current leadership role, I spearhead projects that involve
+              complex API integrations, containerization strategies using Docker
+              and Docker Compose, and the implementation of streamlined CI/CD
+              pipelines via GitLab CI/CD. I'm deeply committed to data analysis
+              and visualization, employing Python libraries such as Pandas,
+              Matplotlib, and Seaborn, alongside Looker Studio, to transform raw
+              data into actionable insights and compelling visual narratives.
+            </p>
+            <p className="mb-4">
+              One of my core strengths lies in conducting in-depth analyses of
+              user behavior and market trends. I focus on critical metrics like
+              Lifetime Value (LTV), Customer Acquisition Cost (CAC), and other
+              pivotal KPIs to drive strategic decision-making. This analytical
+              acumen, combined with my background in psychology and marketing,
+              allows me to bridge the gap between technical implementations and
+              business strategies, delivering solutions that not only process
+              data efficiently but also yield meaningful business impact.
+            </p>
+            <p className="mb-4">
+              Throughout my career, I've consistently embraced a digital-first
+              approach, staying ahead of market curves through advanced
+              competitive analysis and consumer trend methodologies. My
+              experience spans from marketing management to business strategy
+              consulting, equipping me with a holistic understanding of how data
+              engineering can revolutionize business operations across various
+              sectors.
             </p>
             <p>
-              My expertise lies in developing and maintaining applications, with
-              a focus on leveraging cloud technologies. I'm proficient in Google
-              Cloud Platform (GCP), utilizing services like BigQuery, Cloud
-              Storage, Cloud Functions, and App Engine. I also have experience
-              with AWS, particularly S3 and CloudFront for efficient file
-              storage and content delivery.
-            </p>
-            <p>
-              In my current role, I've been deeply involved in API integrations,
-              containerization using Docker and Docker Compose, and implementing
-              CI/CD pipelines with Gitlab CI/CD. I'm passionate about data
-              analysis and visualization, using Python libraries such as Pandas,
-              Matplotlib, and Seaborn, as well as Looker Studio for creating
-              insightful dashboards.
-            </p>
-            <p>
-              One of my key strengths is conducting deep analysis of user
-              behavior, focusing on crucial metrics like Lifetime Value (LTV),
-              Customer Acquisition Cost (CAC), and other important KPIs. This
-              analytical approach allows me to provide valuable insights that
-              drive marketing strategies and business decisions.
+              As a multilingual professional fluent in English, Spanish, and
+              Portuguese, with basic French and Italian skills, I bring a global perspective
+              to my work. I'm always eager to tackle new challenges, learn
+              emerging technologies, and collaborate with diverse teams to
+              create innovative, data-driven solutions that propel businesses
+              forward in the digital age.
             </p>
           </ScrollArea>
         </div>

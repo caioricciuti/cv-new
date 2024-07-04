@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
   ChevronRight,
-  BarChart2,
-  Globe,
+  Briefcase,
+  Database,
   PieChart,
+  TrendingUp,
 } from "lucide-react";
-import "tailwindcss/tailwind.css";
 
 const getPeriodStringWithDays = (
   startYear: number,
@@ -52,57 +52,81 @@ interface ExperienceData {
 const experienceData: ExperienceData[] = [
   {
     company: "Synatix GmbH",
-    position: "Marketing Technologist / Data Engineer",
-    period: `February 2021 - Present`,
+    position: "Team Leader & Data Engineer",
+    period: "February 2021 - Present",
     days: `${getPeriodStringWithDays(2021, 2)} and counting...`,
     description: [
-      "Develop and maintain applications (NodeJS).",
-      "GCP - Big Query, GCS, Cloud fuctions, app engine...",
-      "API integration.",
-      "Docker and Docker Compose for containerization.",
-      "Leverage AWS (S3, CloudFront) for file storage and content delivery.",
-      "Implement CI/CD pipelines (Gitlab CI/CD).",
-      "Data analysis and visualization using Python (Pandas, Matplotlib, Seaborn).",
-      "Looker Studio for data visualization and analysis.",
-      "Deep Analisis of user behavior, LTV, CAC, and other KPIs.",
+      "Lead and manage data engineering projects, ensuring efficient team collaboration and timely delivery.",
+      "Develop and optimize robust data pipelines using GCP services (Cloud Functions, Pub/Sub, BigQuery).",
+      "Design and implement data lake solutions on Google Cloud Platform for efficient data storage and retrieval.",
+      "Create and maintain ETL processes for seamless data transformation and loading.",
+      "Develop applications using NodeJS and Python for data processing and analysis.",
+      "Implement and manage Docker containerization for improved application deployment and scalability.",
+      "Utilize AWS services (S3, CloudFront) for cost-effective file storage and content delivery.",
+      "Set up and maintain CI/CD pipelines using GitLab CI/CD for streamlined development processes.",
+      "Perform in-depth data analysis using Python libraries (Pandas, Matplotlib, Seaborn) to extract actionable insights.",
+      "Create comprehensive data visualizations using Looker Studio for stakeholder presentations.",
+      "Conduct advanced analysis of user behavior, focusing on key metrics such as LTV, CAC, and other relevant KPIs.",
+      "Optimize API integrations to enhance data flow and improve system interoperability.",
     ],
-    icon: <Globe className="h-6 w-6 text-indigo-500" />,
+    icon: <Database className="h-6 w-6 text-indigo-500" />,
+  },
+  {
+    company: "Synatix GmbH",
+    position: "Marketing Manager & Data Analyst",
+    period: "February 2021 - 2022",
+    days: `${getPeriodStringWithDays(2021, 2, 2022, 12)}`,
+    description: [
+      "Developed data-driven marketing strategies by leveraging advanced analytics and market research.",
+      "Optimized data flows and storage solutions in the cloud to support scalable and efficient data processing.",
+      "Managed and enhanced email marketing campaigns, focusing on data segmentation and personalization.",
+      "Utilized cloud analytics to improve brand promotion and customer engagement across various platforms.",
+      "Collaborated with cross-functional teams to align marketing initiatives with data-centric insights.",
+    ],
+    icon: <TrendingUp className="h-6 w-6 text-indigo-500" />,
   },
   {
     company: "Logitravel Group",
-    position: "Marketing Manager PT/BR",
-    period: `February 2019 - January 2021`,
-    days: `${getPeriodStringWithDays(2019, 1, 2021, 1)} - Yep, I stick around!`,
+    position: "Marketer / Data Analyst",
+    period: "February 2018 - January 2021",
+    days: `${getPeriodStringWithDays(
+      2018,
+      2,
+      2021,
+      1
+    )} - A journey of growth and insights!`,
     description: [
-      "Develop and execute strategic marketing plans for Portuguese and Brazilian markets",
-      "Conduct market analysis",
-      "Plan and manage budgets",
-      "Plan and execute campaigns",
-      "Manage social media",
-      "Utilize Google Tools (Analytics, Search Console, AdWords)",
-      "Implement technical solutions (UTMs, parameters, product feeds)",
+      "Developed and executed strategic marketing plans for Portuguese and Brazilian markets.",
+      "Conducted comprehensive market analysis to identify trends and opportunities.",
+      "Managed budgets effectively, ensuring optimal resource allocation for marketing initiatives.",
+      "Planned and executed multi-channel marketing campaigns to drive user acquisition and engagement.",
+      "Managed social media presence, enhancing brand visibility and customer interaction.",
+      "Utilized Google Tools (Analytics, Search Console, AdWords) for data-driven decision making.",
+      "Implemented technical solutions including UTMs, custom parameters, and product feeds for improved tracking and performance analysis.",
+      "Analyzed user behavior and campaign performance to optimize marketing strategies.",
     ],
     icon: <PieChart className="h-6 w-6 text-indigo-500" />,
   },
   {
-    company: "Consulor, Freelance",
-    position: "Business/Corporate Strategist",
-    period: `June 2014 - January 2019`,
+    company: "Consulor",
+    position: "Freelance Business/Corporate Strategist",
+    period: "June 2014 - January 2018",
     days: `${getPeriodStringWithDays(
       2014,
       6,
-      2019,
+      2018,
       1
-    )} - 4 years and 7 months!`,
+    )} - Diverse experiences shaping business futures!`,
     description: [
-      "Provide expertise to help businesses achieve goals and solve problems",
-      "Work with clients to understand needs and define project scope",
-      "Focus on results orientation and long-term planning",
-      "Plan and analyze budgets",
-      "Assist with business internationalization and expansion",
-      "Engage in B2B sales",
+      "Provided expert consulting to help businesses achieve strategic goals and overcome challenges.",
+      "Worked closely with clients to understand their unique needs and define comprehensive project scopes.",
+      "Focused on results-oriented strategies and long-term planning for sustainable business growth.",
+      "Conducted in-depth budget planning and analysis to optimize financial performance.",
+      "Assisted clients with business internationalization and expansion strategies.",
+      "Engaged in B2B sales, developing strong client relationships and driving business development.",
+      "Applied analytical skills to develop targeted strategies informed by market research and data analysis.",
     ],
-    icon: <BarChart2 className="h-6 w-6 text-indigo-500" />,
+    icon: <Briefcase className="h-6 w-6 text-indigo-500" />,
   },
 ];
 
@@ -171,7 +195,8 @@ const ExperienceCard: React.FC<{
         <h4 className="text-xl mb-1">{data.position}</h4>
         <p className="text-sm text-gray-400 mb-2">{data.period}</p>
         <p className="text-xs text-primary/50 mb-4">{data.days}</p>
-        <ul className="list-disc pl-5 space-y-1">
+
+        <ul className="list-disc pl-5 space-y-1 max-h-[50vh] overflow-auto">
           {data.description.map((item, index) => (
             <li key={index} className="text-sm">
               {item}
