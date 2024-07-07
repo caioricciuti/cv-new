@@ -40,7 +40,7 @@ function ScrollButton() {
 
   return (
     <div className="fixed bottom-4 w-full text-center ">
-      <Button onClick={handleScroll} size="icon" className="animate-bounce z-30">
+      <Button onClick={handleScroll} size="icon" className="animate-bounce z-50">
         {scrollingDown ? <ChevronDown /> : <ChevronUp />}
       </Button>
     </div>
