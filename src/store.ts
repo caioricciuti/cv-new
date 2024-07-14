@@ -18,6 +18,10 @@ interface GithubRepo {
   forks_count: number;
   html_url: string;
   language: string;
+  size: number;
+  open_issues_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 interface GithubEvent {
@@ -33,6 +37,7 @@ interface GithubData {
 
 interface GithubState {
   data: GithubData | null;
+  lastFetched: number | null;
   setData: (data: GithubData) => void;
   clearData: () => void;
 }
@@ -43,8 +48,9 @@ const useGithubStore = create<GithubState>(
   (persist as any)(
     (set: any) => ({
       data: null,
-      setData: (data: GithubData) => set({ data }),
-      clearData: () => set({ data: null }),
+      lastFetched: null,
+      setData: (data: GithubData) => set({ data, lastFetched: Date.now() }),
+      clearData: () => set({ data: null, lastFetched: null }),
     }),
     {
       name: "github-data",

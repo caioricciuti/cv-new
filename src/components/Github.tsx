@@ -14,6 +14,7 @@ import {
   PieChart,
   Sector,
 } from "recharts";
+import { Button } from "@/components/ui/button";
 import {
   Github,
   Star,
@@ -21,13 +22,13 @@ import {
   Code,
   Users,
   Activity,
-  Box,
   Layers,
   PieChart as PieChartIcon,
   AlertCircleIcon,
 } from "lucide-react";
 
 import useGithubStore from "@/store"; // Adjust the path as necessary
+import { Input } from "./ui/input";
 
 interface GithubUser {
   name: string;
@@ -46,6 +47,10 @@ interface GithubRepo {
   forks_count: number;
   html_url: string;
   language: string;
+  size: number;
+  open_issues_count: number;
+  created_at: string;
+  updated_at: string;
 }
 
 interface GithubEvent {
@@ -79,43 +84,19 @@ const fetchGithubData = async (username: string): Promise<GithubData> => {
   return { user: userData, repos: reposData, events: eventsData };
 };
 
-interface RepoIconProps {
-  size: number;
-  color: string;
-  starCount: number;
-  maxStars: number;
-}
-
-const RepoIcon: React.FC<RepoIconProps> = ({
-  size,
-  color,
-  starCount,
-  maxStars,
+const renderActiveShape = (props: {
+  cx: number;
+  cy: number;
+  midAngle: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  payload: { name: string };
+  percent: number;
+  value: number;
 }) => {
-  const scale = 0.5 + (starCount / maxStars) * 0.5;
-  return (
-    <div className="relative" style={{ width: size, height: size }}>
-      <Box
-        size={size}
-        color={color}
-        style={{ position: "absolute", top: 0, left: 0 }}
-      />
-      <Star
-        size={size * 0.5}
-        color={color}
-        fill={color}
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: `translate(-50%, -50%) scale(${scale})`,
-        }}
-      />
-    </div>
-  );
-};
-
-const renderActiveShape = (props) => {
   const RADIAN = Math.PI / 180;
   const {
     cx,
@@ -173,7 +154,8 @@ const renderActiveShape = (props) => {
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
         textAnchor={textAnchor}
-        fill="#333"
+        fill="#8c8c8c"
+        className="mb-2"
       >
         {payload.name}
       </text>
@@ -190,12 +172,15 @@ const renderActiveShape = (props) => {
   );
 };
 
-class CustomActiveShapePieChart extends PureComponent {
+class CustomActiveShapePieChart extends PureComponent<
+  { data: { name: string; value: number }[] },
+  { activeIndex: number }
+> {
   state = {
     activeIndex: 0,
   };
 
-  onPieEnter = (_, index) => {
+  onPieEnter = (_: any, index: number) => {
     this.setState({
       activeIndex: index,
     });
@@ -208,7 +193,7 @@ class CustomActiveShapePieChart extends PureComponent {
         <PieChart width={400} height={400}>
           <Pie
             activeIndex={this.state.activeIndex}
-            activeShape={renderActiveShape}
+            activeShape={renderActiveShape as any}
             data={data}
             cx="50%"
             cy="50%"
@@ -217,7 +202,6 @@ class CustomActiveShapePieChart extends PureComponent {
             fill="#8884d8"
             dataKey="value"
             onMouseEnter={this.onPieEnter}
-            className="text-white"
           />
         </PieChart>
       </ResponsiveContainer>
@@ -262,7 +246,7 @@ const ActivityGraph: React.FC<{ events: GithubEvent[] }> = ({ events }) => {
       <LineChart data={chartData}>
         <XAxis dataKey="date" />
         <YAxis />
-        <Tooltip />
+        <Tooltip labelClassName="text-gray-500" />
         <Line type="monotone" dataKey="count" stroke="#8884d8" />
       </LineChart>
     </ResponsiveContainer>
@@ -271,10 +255,11 @@ const ActivityGraph: React.FC<{ events: GithubEvent[] }> = ({ events }) => {
 
 const GithubDashboard: React.FC = () => {
   const [username, setUsername] = useState("caioricciuti");
-  const { data, setData } = useGithubStore();
+  const { data, lastFetched, setData, clearData } = useGithubStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -290,33 +275,57 @@ const GithubDashboard: React.FC = () => {
   }, [username, setData]);
 
   useEffect(() => {
-    if (!data) {
+    const now = Date.now();
+    const isDataExpired =
+      !lastFetched || now - lastFetched > 24 * 60 * 60 * 1000;
+
+    if (!data || isDataExpired) {
       fetchData();
     } else {
       setIsLoading(false);
     }
-  }, [data, fetchData]);
+  }, [data, lastFetched, fetchData]);
+
+  const filteredRepos = data?.repos
+    .filter((repo) =>
+      repo.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .sort((a, b) => b.stargazers_count - a.stargazers_count);
 
   return (
-    <div className="text-primary p-12">
-      <div className="mx-auto">
+    <div className="text-primary p-2 md:p-12">
+      <div className="m-auto h-full w-full">
         {error && (
           <Alert className="bg-red-500/20 text-red-500 border-red-400">
             <AlertCircleIcon className="text-red-500" />
             <AlertTitle className="text-red-500 ml-4">
-              Something went wrong when fetching data.
+              Something went wrong when fetching data for my Github profile...
+              Sorry about that!
             </AlertTitle>
             <AlertDescription className="text-red-500 ml-4">
               {error} - for <i>{username}</i>
+              <Button variant="link" onClick={() => fetchData()}>
+                Retry
+              </Button>
+            </AlertDescription>
+            <AlertDescription className="text-red-500 ml-4">
+              Please try again later. - Or access my Github profile directly by{" "}
+              <a
+                className="font-bold "
+                href="https://github.com/caioricciuti"
+                target="_blank"
+              >
+                Clicking here
+              </a>
             </AlertDescription>
           </Alert>
         )}
         {!error && (
-          <Card className="max-h-screen">
+          <Card>
             <CardHeader className="text-center">
               {isLoading ? (
                 <motion.div
-                  initial={{ scale: 0.4, opacity: 1 }}
+                  initial={{ scale: 0.8, opacity: 1 }}
                   animate={{ scale: 1.0, opacity: 1 }}
                   transition={{ duration: 2 }}
                 >
@@ -324,7 +333,7 @@ const GithubDashboard: React.FC = () => {
                 </motion.div>
               ) : (
                 <motion.div
-                  initial={{ scale: 0.4, opacity: 1 }}
+                  initial={{ scale: 0.8, opacity: 1 }}
                   animate={{ scale: 1.0, opacity: 1 }}
                   transition={{ duration: 2 }}
                 >
@@ -359,7 +368,7 @@ const GithubDashboard: React.FC = () => {
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <h3 className="text-sm font-medium">Followers</h3>
@@ -410,36 +419,71 @@ const GithubDashboard: React.FC = () => {
                   </div>
                 </TabsContent>
                 <TabsContent value="repos">
-                  <div className="space-y-4 mt-4">
-                    {data?.repos.slice(0, 5).map((repo) => (
-                      <Card key={repo.id}>
-                        <CardHeader>
-                          <h3 className="text-lg font-semibold">
-                            <a
-                              href={repo.html_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:underline"
-                            >
-                              {repo.name}
-                            </a>
-                          </h3>
-                        </CardHeader>
-                        <CardContent>
-                          <p className="text-sm ">{repo.description}</p>
-                          <div className="flex space-x-4 mt-2">
-                            <span className="flex items-center">
-                              <Star className="h-4 w-4 mr-1 text-yellow-500" />
-                              {repo.stargazers_count}
-                            </span>
-                            <span className="flex items-center">
-                              <GitFork className="h-4 w-4 mr-1 text-blue-500" />
-                              {repo.forks_count}
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                  <div className="mb-4">
+                    <Input
+                      type="text"
+                      placeholder="Search repositories..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full p-4 border rounded mt-4 mb-2"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                    {filteredRepos && filteredRepos.length > 0 ? (
+                      filteredRepos.map((repo) => (
+                        <Card key={repo.id}>
+                          <CardHeader>
+                            <h3 className="text-lg font-semibold">
+                              <a
+                                href={repo.html_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="hover:underline"
+                              >
+                                {repo.name}
+                              </a>
+                            </h3>
+                          </CardHeader>
+                          <CardContent>
+                            <p className="text-sm">{repo.description}</p>
+                            <div className="flex space-x-4 mt-2">
+                              <span className="flex items-center">
+                                <Star className="h-4 w-4 mr-1 text-yellow-500" />
+                                {repo.stargazers_count}
+                              </span>
+                              <span className="flex items-center">
+                                <GitFork className="h-4 w-4 mr-1 text-blue-500" />
+                                {repo.forks_count}
+                              </span>
+                              <span className="flex items-center">
+                                <Activity className="h-4 w-4 mr-1 text-green-500" />
+                                {repo.open_issues_count} issues
+                              </span>
+                            </div>
+                            <div className="text-sm mt-2">
+                              <div>Size: {repo.size} KB</div>
+                              <div>
+                                Created:{" "}
+                                {new Date(repo.created_at).toLocaleDateString()}
+                              </div>
+                              <div>
+                                Updated:{" "}
+                                {new Date(repo.updated_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center col-span-full mt-6 border p-12 rounded-md">
+                        <div>
+                          <p>
+                            No repositories found for the search term:{" "}
+                            <strong>{searchTerm}</strong>
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="activity">

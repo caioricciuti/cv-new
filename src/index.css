@@ -2,6 +2,17 @@
   @tailwind components;
   @tailwind utilities;
 
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* Make overflows more sutil and less visible */
+    scrollbar-width: none ;
+    scrollbar-color: var(--ring) var(--background);
+    
+  }
+
+
   @layer base {
     :root {
       --background: 0 0% 100%;

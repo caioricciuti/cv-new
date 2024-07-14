@@ -19,6 +19,8 @@ import {
   RefreshCw,
   RocketIcon,
   Telescope,
+  Linkedin,
+  GithubIcon,
 } from "lucide-react";
 import {
   Carousel,
@@ -32,6 +34,7 @@ import mallorca from "/mallorca.jpg";
 import mallorca2 from "/mallorca2.jpg";
 import mallorca3 from "/mallorca3.jpg";
 import mallorca4 from "/mallorca4.jpg";
+import GithubDashboard from "./Github";
 
 interface CardProps {
   title: string;
@@ -92,25 +95,50 @@ const cardsData: CardProps[] = [
     icon: <RocketIcon className="h-6 w-6" />,
     dialogContent: {
       title: "Let's talk!",
-      description:
-        "I'm sure you're thinking, who in the world still uses email? 🤔... Try me!",
+      description: "Let's connect and discuss how we can work together! 🚀",
       content: (
-        <div className="grid gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <MailOpenIcon className="h-6 w-6" />
+        <div className="flex flex-col">
+          <a
+            href="mailto:caio.ricciuti@outlook.com"
+            className="font-semibold text-lg flex items-center border p-2 gap-4 rounded-md mb-2 hover:bg-accent transition-colors duration-200"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground border">
+              <MailOpenIcon />
             </div>
             <div>
-              <a
-                href="mailto:caio.ricciuti@outlook.com"
-                className="font-semibold"
-              >
-                <p className="text-sm text-muted-foreground">
-                  Waiting for your message! 😊
-                </p>
-              </a>
+              <p className="text-sm text-muted-foreground">
+                Waiting for your message! 😊
+              </p>
             </div>
-          </div>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/caioricciuti/"
+            target="_blank"
+            className="font-semibold text-lg flex items-center border p-2 gap-4 rounded-md mb-2 hover:bg-accent transition-colors duration-200"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground border">
+              <Linkedin />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Let's connect on LinkedIn! 👋
+              </p>
+            </div>
+          </a>
+          <a
+            href="https://github.com/caioricciuti"
+            target="_blank"
+            className="font-semibold text-lg flex items-center border p-2 gap-4 rounded-md mb-2 hover:bg-accent transition-colors duration-200"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground border">
+              <GithubIcon />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Check out my GitHub! 🚀
+              </p>
+            </div>
+          </a>
         </div>
       ),
     },
@@ -174,9 +202,9 @@ const cardsData: CardProps[] = [
             </p>
             <p>
               As a multilingual professional fluent in English, Spanish, and
-              Portuguese, with basic French and Italian skills, I bring a global perspective
-              to my work. I'm always eager to tackle new challenges, learn
-              emerging technologies, and collaborate with diverse teams to
+              Portuguese, with basic French and Italian skills, I bring a global
+              perspective to my work. I'm always eager to tackle new challenges,
+              learn emerging technologies, and collaborate with diverse teams to
               create innovative, data-driven solutions that propel businesses
               forward in the digital age.
             </p>
@@ -206,8 +234,8 @@ const Sphere = () => {
 };
 
 const InteractiveRevealComponent = () => {
-  const [revealed, setRevealed] = useState(false);
-  const [hasBeenHovered, setHasBeenHovered] = useState(false);
+  const [revealed, setRevealed] = useState(true);
+  const [hasBeenHovered, setHasBeenHovered] = useState(true);
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
 
   const handleMouseEnter = () => {
@@ -238,7 +266,7 @@ const InteractiveRevealComponent = () => {
       >
         {revealed ? (
           <>
-            <Button
+            {/* <Button
               size="icon"
               variant="outline"
               className="absolute top-4 right-4 z-30"
@@ -248,7 +276,7 @@ const InteractiveRevealComponent = () => {
               }}
             >
               <RefreshCw size={24} />
-            </Button>
+            </Button> */}
             <div className="w-full max-w-4xl z-20 relative">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {cardsData.map((card, index) => (
