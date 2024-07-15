@@ -25,6 +25,7 @@ import {
   Layers,
   PieChart as PieChartIcon,
   AlertCircleIcon,
+  SearchSlash,
 } from "lucide-react";
 
 import useGithubStore from "@/store"; // Adjust the path as necessary
@@ -109,7 +110,6 @@ const renderActiveShape = (props: {
     fill,
     payload,
     percent,
-    value,
   } = props;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
@@ -254,8 +254,8 @@ const ActivityGraph: React.FC<{ events: GithubEvent[] }> = ({ events }) => {
 };
 
 const GithubDashboard: React.FC = () => {
-  const [username, setUsername] = useState("caioricciuti");
-  const { data, lastFetched, setData, clearData } = useGithubStore();
+  const [username] = useState("caioricciuti");
+  const { data, lastFetched, setData } = useGithubStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
@@ -293,7 +293,7 @@ const GithubDashboard: React.FC = () => {
     .sort((a, b) => b.stargazers_count - a.stargazers_count);
 
   return (
-    <div className="text-primary p-2 md:p-12">
+    <div className="text-primary p-2 md:p-12 min-h-screen">
       <div className="m-auto h-full w-full">
         {error && (
           <Alert className="bg-red-500/20 text-red-500 border-red-400">
@@ -337,13 +337,9 @@ const GithubDashboard: React.FC = () => {
                   animate={{ scale: 1.0, opacity: 1 }}
                   transition={{ duration: 2 }}
                 >
-                  <img
-                    src={data?.user.avatar_url}
-                    alt={`${data?.user.name}'s avatar`}
-                    className="w-24 h-24 rounded-full mx-auto mb-4"
-                  />
-                  <h1 className="text-3xl font-bold">{data?.user.name}</h1>
-                  <p>{data?.user.bio}</p>
+                  <h1 className="text-2xl font-bold flex items-center m-auto w-full">
+                    Github stats <Github className="ml-4" />
+                  </h1>
                 </motion.div>
               )}
             </CardHeader>
@@ -351,24 +347,38 @@ const GithubDashboard: React.FC = () => {
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="overview">
-                    <Layers className="w-4 h-4 mr-2" />
-                    <span className="hidden md:block">Overview</span>
+                    <Layers className="w-4 h-4" />
+                    <span className="hidden md:block ml-2">Overview</span>
                   </TabsTrigger>
                   <TabsTrigger value="repos">
-                    <Code className="w-4 h-4 mr-2" />
-                    <span className="hidden md:block">Repos</span>
+                    <Code className="w-4 h-4" />
+                    <span className="hidden md:block ml-2">Repos</span>
                   </TabsTrigger>
                   <TabsTrigger value="activity">
-                    <Activity className="w-4 h-4 mr-2" />
-                    <span className="hidden md:block">Activity</span>
+                    <Activity className="w-4 h-4" />
+                    <span className="hidden md:block ml-2">Activity</span>
                   </TabsTrigger>
                   <TabsTrigger value="visualization">
-                    <PieChartIcon className="w-4 h-4 mr-2" />
-                    <span className="hidden md:block">Visualization</span>
+                    <PieChartIcon className="w-4 h-4" />
+                    <span className="hidden md:block ml-2">Visualization</span>
                   </TabsTrigger>
                 </TabsList>
                 <TabsContent value="overview">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <h3 className="text-sm font-medium">Total Stars</h3>
+                        <Star className="h-4 w-4" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {data?.repos.reduce(
+                            (acc, repo) => acc + repo.stargazers_count,
+                            0
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
                     <Card>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <h3 className="text-sm font-medium">Followers</h3>
@@ -402,20 +412,6 @@ const GithubDashboard: React.FC = () => {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <h3 className="text-sm font-medium">Total Stars</h3>
-                        <Star className="h-4 w-4" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {data?.repos.reduce(
-                            (acc, repo) => acc + repo.stargazers_count,
-                            0
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
                   </div>
                 </TabsContent>
                 <TabsContent value="repos">
@@ -428,12 +424,12 @@ const GithubDashboard: React.FC = () => {
                       className="w-full p-4 border rounded mt-4 mb-2"
                     />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 max-h-[60vh] overflow-auto">
                     {filteredRepos && filteredRepos.length > 0 ? (
                       filteredRepos.map((repo) => (
                         <Card key={repo.id}>
                           <CardHeader>
-                            <h3 className="text-lg font-semibold">
+                            <p className="text-lg font-bold">
                               <a
                                 href={repo.html_url}
                                 target="_blank"
@@ -442,7 +438,7 @@ const GithubDashboard: React.FC = () => {
                               >
                                 {repo.name}
                               </a>
-                            </h3>
+                            </p>
                           </CardHeader>
                           <CardContent>
                             <p className="text-sm">{repo.description}</p>
@@ -481,6 +477,7 @@ const GithubDashboard: React.FC = () => {
                             No repositories found for the search term:{" "}
                             <strong>{searchTerm}</strong>
                           </p>
+                          <SearchSlash className="w-16 h-16 mx-auto mt-4" />
                         </div>
                       </div>
                     )}

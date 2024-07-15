@@ -1,9 +1,6 @@
-import React, { useState, useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import THREE from "three";
+
 import {
   Dialog,
   DialogContent,
@@ -16,7 +13,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   MapPinIcon,
   MailOpenIcon,
-  RefreshCw,
   RocketIcon,
   Telescope,
   Linkedin,
@@ -31,10 +27,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import mallorca from "/mallorca.jpg";
+import mallorca4 from "/mallorca4.jpg";
 import mallorca2 from "/mallorca2.jpg";
 import mallorca3 from "/mallorca3.jpg";
-import mallorca4 from "/mallorca4.jpg";
-import GithubDashboard from "./Github";
 
 interface CardProps {
   title: string;
@@ -215,157 +210,35 @@ const cardsData: CardProps[] = [
   },
 ];
 
-const Sphere = () => {
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame(({ clock }) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.x = clock.getElapsedTime() * 0.2;
-      meshRef.current.rotation.y = clock.getElapsedTime() * 0.4;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} scale={2}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshStandardMaterial color="hotpink" wireframe />
-    </mesh>
-  );
-};
-
 const InteractiveRevealComponent = () => {
-  const [revealed, setRevealed] = useState(true);
-  const [hasBeenHovered, setHasBeenHovered] = useState(true);
   const [activeDialog, setActiveDialog] = useState<string | null>(null);
 
-  const handleMouseEnter = () => {
-    if (!hasBeenHovered) {
-      setTimeout(() => {
-        setRevealed(true);
-        setHasBeenHovered(true);
-      }, 100);
-    }
-  };
-
-  const handleReset = () => {
-    setRevealed(false);
-  };
-
-  const handleClick = () => {
-    if (hasBeenHovered) {
-      setRevealed(true);
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div
-        onMouseEnter={handleMouseEnter}
-        onClick={handleClick}
-        className="min-h-screen flex flex-col items-center justify-center w-full relative p-4 sm:p-6 md:p-8 lg:p-12"
-      >
-        {revealed ? (
-          <>
-            {/* <Button
-              size="icon"
-              variant="outline"
-              className="absolute top-4 right-4 z-30"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleReset();
-              }}
-            >
-              <RefreshCw size={24} />
-            </Button> */}
-            <div className="w-full max-w-4xl z-20 relative">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {cardsData.map((card, index) => (
-                  <Card
-                    key={index}
-                    onClick={() => setActiveDialog(card.title)}
-                    className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-                  >
-                    <CardContent className="flex items-center gap-4 p-6">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                        {card.icon}
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold">{card.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {card.description}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="relative z-20 text-center"
-          >
-            <motion.p
-              className="text-4xl md:text-5xl font-bold text-white mb-4"
-              initial={{ y: -20 }}
-              animate={{ y: 0 }}
-              transition={{ type: "spring", stiffness: 200 }}
-            >
-              {hasBeenHovered ? "See again?!" : "There is more to see!"}
-            </motion.p>
-            <motion.div
-              className="flex justify-center items-center space-x-8 mt-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1, scale: 1.1 }}
-              transition={{ delay: 0.5 }}
-            >
-              <motion.span
-                className="text-5xl mt-4"
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ repeat: Infinity, duration: 2.5 }}
+    <div className="min-h-screen bg-black">
+      <div className="relative min-h-screen flex flex-col items-center justify-center w-full p-4 sm:p-6 md:p-8 lg:p-12">
+        <div className="w-full max-w-4xl z-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {cardsData.map((card, index) => (
+              <Card
+                key={index}
+                onClick={() => setActiveDialog(card.title)}
+                className="cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors duration-200 bg-opacity-80 backdrop-blur-sm"
               >
-                🎉
-              </motion.span>
-              <motion.span
-                className="text-5xl mt-4"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1.5, delay: 0.3 }}
-              >
-                🚀
-              </motion.span>
-              <motion.span
-                className="text-5xl mt-4"
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ repeat: Infinity, duration: 1.5, delay: 0.6 }}
-              >
-                🌟
-              </motion.span>
-            </motion.div>
-          </motion.div>
-        )}
-
-        <AnimatePresence>
-          {revealed && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0"
-            >
-              <Canvas className="w-full h-full">
-                <ambientLight intensity={0.5} />
-                <pointLight position={[10, 10, 10]} />
-                <Sphere />
-                <OrbitControls enableZoom={false} />
-              </Canvas>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <div className="absolute inset-0 [mask-image:radial-gradient(600px_at_center,white,transparent)] bg-black/50 dark:bg-black/90" />
+                <CardContent className="flex items-center gap-4 p-6">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                    {card.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{card.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {card.description}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
 
       {cardsData.map((card, index) => (
