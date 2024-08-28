@@ -39,11 +39,13 @@ function ScrollButton() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 w-full text-center ">
-      <Button onClick={handleScroll} size="icon" className="animate-bounce z-50">
-        {scrollingDown ? <ChevronDown /> : <ChevronUp />}
-      </Button>
-    </div>
+    <Button
+      onClick={handleScroll}
+      size="icon"
+      className=" animate-bounce md:fixed z-50 bg-transparent text-gray-50 hover:bg-transparent hover:border bottom-4 left-1/2 transform -translate-x-1/2"
+    >
+      {scrollingDown ? <ChevronDown /> : <ChevronUp />}
+    </Button>
   );
 }
 

@@ -151,7 +151,7 @@ const cardsData: CardProps[] = [
             <p className="mb-4">
               I'm a Data Engineer and Team Leader at Synatix GmbH, where I've
               been driving innovation since February 2021. With a career
-              spanning {new Date().getFullYear() - 2014}+ years, I've cultivated
+              spanning {new Date().getFullYear() - 2016}+ years, I've cultivated
               a unique blend of expertise in data engineering, cloud
               technologies, and marketing technology. My passion lies in
               harnessing the power of data and cutting-edge tech to fuel

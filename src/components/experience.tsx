@@ -1,18 +1,24 @@
-import React, { useRef, useState, useEffect } from "react";
-import * as THREE from "three";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  useState,
+  useRef,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronLeft,
   ChevronRight,
-  Briefcase,
   Database,
-  PieChart,
   TrendingUp,
+  PieChart,
+  Briefcase,
 } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const getPeriodStringWithDays = (
   startYear: number,
@@ -20,36 +26,21 @@ const getPeriodStringWithDays = (
   endYear?: number,
   endMonth?: number
 ): string => {
-  const startDate = new Date(startYear, startMonth - 1, 1); // Month is 0-indexed
+  const startDate = new Date(startYear, startMonth - 1, 1);
   let endDate: Date;
 
   if (endYear && endMonth) {
-    // If end year and month are provided, use the last day of that month
-    endDate = new Date(endYear, endMonth, 0); // This gives the last day of the previous month
+    endDate = new Date(endYear, endMonth, 0);
   } else {
-    // Otherwise, use the current date
     endDate = new Date();
   }
 
-  // Calculate the difference in time
   const differenceInTime = endDate.getTime() - startDate.getTime();
-  // Calculate the difference in days
   const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
   return `${differenceInDays} days`;
 };
 
-extend({ OrbitControls });
-
-interface ExperienceData {
-  company: string;
-  position: string;
-  days?: string;
-  period: string;
-  description: string[];
-  icon: JSX.Element;
-}
-
-const experienceData: ExperienceData[] = [
+const experienceData = [
   {
     company: "Synatix GmbH",
     position: "Team Leader & Data Engineer",
@@ -69,6 +60,18 @@ const experienceData: ExperienceData[] = [
       "Conduct advanced analysis of user behavior, focusing on key metrics such as LTV, CAC, and other relevant KPIs.",
       "Optimize API integrations to enhance data flow and improve system interoperability.",
     ],
+    skills: [
+      "Data Engineering",
+      "GCP",
+      "AWS",
+      "Python",
+      "NodeJS",
+      "Docker",
+      "CI/CD",
+      "ETL",
+      "Data Analysis",
+      "Data Visualization",
+    ],
     icon: <Database className="h-6 w-6 text-indigo-500" />,
   },
   {
@@ -79,9 +82,18 @@ const experienceData: ExperienceData[] = [
     description: [
       "Developed data-driven marketing strategies by leveraging advanced analytics and market research.",
       "Optimized data flows and storage solutions in the cloud to support scalable and efficient data processing.",
-      "Managed and enhanced email marketing campaigns, focusing on data segmentation and personalization.",
+      "Managed and enhanced marketing campaigns, focusing on data segmentation and personalization.",
       "Utilized cloud analytics to improve brand promotion and customer engagement across various platforms.",
       "Collaborated with cross-functional teams to align marketing initiatives with data-centric insights.",
+    ],
+    skills: [
+      "Data Analysis",
+      "Marketing Strategy",
+      "Cloud Analytics",
+      "Data Segmentation",
+      "Cross-functional Collaboration",
+      "Market Research",
+      "Google Tag Manager",
     ],
     icon: <TrendingUp className="h-6 w-6 text-indigo-500" />,
   },
@@ -105,6 +117,16 @@ const experienceData: ExperienceData[] = [
       "Implemented technical solutions including UTMs, custom parameters, and product feeds for improved tracking and performance analysis.",
       "Analyzed user behavior and campaign performance to optimize marketing strategies.",
     ],
+    skills: [
+      "Marketing Strategy",
+      "Market Analysis",
+      "Budget Management",
+      "Multi-channel Campaigns",
+      "Social Media Management",
+      "Google Analytics",
+      "AdWords",
+      "Performance Analysis",
+    ],
     icon: <PieChart className="h-6 w-6 text-indigo-500" />,
   },
   {
@@ -126,101 +148,120 @@ const experienceData: ExperienceData[] = [
       "Engaged in B2B sales, developing strong client relationships and driving business development.",
       "Applied analytical skills to develop targeted strategies informed by market research and data analysis.",
     ],
+    skills: [
+      "Business Strategy",
+      "Consulting",
+      "Project Scoping",
+      "Budget Planning",
+      "Financial Analysis",
+      "Internationalization",
+      "B2B Sales",
+      "Market Research",
+    ],
     icon: <Briefcase className="h-6 w-6 text-indigo-500" />,
   },
 ];
 
-const GlobeComponent = () => {
-  const meshRef = useRef<THREE.Mesh>(null!);
-  const geoRef = useRef<THREE.BufferGeometry>(null!);
+const ExperienceCard = ({ data }: { data: any }) => {
+  // Ref to the skills container
+  const skillsRef = useRef(null);
 
-  useEffect(() => {
-    const geometry = new THREE.IcosahedronGeometry(1, 15);
-    const vertices = geometry.attributes.position.array as Float32Array;
-    const newVertices = new Float32Array(vertices.length);
-
-    for (let i = 0; i < vertices.length; i += 3) {
-      const x = vertices[i];
-      const y = vertices[i + 1];
-      const z = vertices[i + 2];
-
-      const length = Math.sqrt(x * x + y * y + z * z);
-      const randomOffset = (Math.random() - 0.5) * 0.05;
-
-      newVertices[i] = (x / length) * (1 + randomOffset);
-      newVertices[i + 1] = (y / length) * (1 + randomOffset);
-      newVertices[i + 2] = (z / length) * (1 + randomOffset);
+  // Function to scroll left
+  const scrollLeft = () => {
+    if (skillsRef.current) {
+      (skillsRef.current as HTMLDivElement).scrollBy({
+        left: -10000,
+        behavior: "smooth",
+      });
     }
+  };
 
-    geometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(newVertices, 3)
-    );
-    geoRef.current = geometry;
-  }, []);
-
-  useFrame((state) => {
-    const time = state.clock.getElapsedTime();
-    meshRef.current.rotation.y = time * 0.1;
-
-    if (geoRef.current) {
-      const vertices = geoRef.current.attributes.position.array as Float32Array;
-      for (let i = 0; i < vertices.length; i += 3) {
-        vertices[i + 1] += Math.sin(time + vertices[i] * 10) * 0.002;
-      }
-      geoRef.current.attributes.position.needsUpdate = true;
+  // Function to scroll right
+  const scrollRight = () => {
+    if (skillsRef.current) {
+      (skillsRef.current as HTMLDivElement).scrollBy({
+        left: 10000,
+        // scroll very slowly to the right
+        behavior: "smooth",
+      });
     }
-  });
+  };
 
   return (
-    <mesh ref={meshRef}>
-      <bufferGeometry ref={geoRef} />
-      <meshStandardMaterial color="#4B0082" wireframe />
-    </mesh>
-  );
-};
-
-const ExperienceCard: React.FC<{
-  data: ExperienceData;
-  onPrev: () => void;
-  onNext: () => void;
-}> = ({ data, onPrev, onNext }) => {
-  return (
-    <Card className="w-full max-w-4xl bg-white/10 backdrop-blur-md relative">
+    <Card className="w-full max-w-4xl shadow-lg">
       <CardContent className="p-6">
         <div className="flex items-center mb-2">
           {data.icon}
           <h3 className="text-2xl font-bold ml-2">{data.company}</h3>
         </div>
         <h4 className="text-xl mb-1">{data.position}</h4>
-        <p className="text-sm text-gray-400 mb-2">{data.period}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+          {data.period}
+        </p>
         <p className="text-xs text-primary/50 mb-4">{data.days}</p>
-
-        <ul className="list-disc pl-5 space-y-1 max-h-[50vh] overflow-auto">
-          {data.description.map((item, index) => (
+        <ul className="list-disc pl-5 space-y-1 mb-4 max-h-[40vh] overflow-y-auto">
+          {data.description.map((item: string, index: number) => (
             <li key={index} className="text-sm">
               {item}
             </li>
           ))}
         </ul>
-      </CardContent>
-      <div className="flex justify-between">
-        <div className="p-2">
-          <Button variant="outline" size="icon" onClick={onPrev}>
+        <div className="relative flex items-center mt-4">
+          {/* Left Scroll Button */}
+          <Button
+            variant="link"
+            size="icon"
+            onMouseEnter={scrollLeft}
+            className="z-10"
+          >
             <ChevronLeft className="h-4 w-4" />
           </Button>
-        </div>
-        <div className="p-2">
-          <Button variant="outline" size="icon" onClick={onNext}>
+
+          {/* Skills Container */}
+          <div
+            ref={skillsRef}
+            className="flex gap-2 overflow-auto scrollbar-hide scroll-smooth mx-2"
+          >
+            {data.skills.map(
+              (
+                skill:
+                  | string
+                  | number
+                  | boolean
+                  | ReactElement<any, string | JSXElementConstructor<any>>
+                  | Iterable<ReactNode>
+                  | ReactPortal
+                  | null
+                  | undefined,
+                index: Key | null | undefined
+              ) => (
+                <Badge
+                  key={index}
+                  variant="secondary"
+                  className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100 text-xs whitespace-nowrap"
+                >
+                  {skill}
+                </Badge>
+              )
+            )}
+          </div>
+
+          {/* Right Scroll Button */}
+          <Button
+            variant="link"
+            size="icon"
+            onMouseEnter={scrollRight}
+            className="z-10"
+          >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
-      </div>
+      </CardContent>
     </Card>
   );
 };
 
-const ExperienceSection: React.FC = () => {
+const ExperienceSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handlePrev = () => {
@@ -236,33 +277,28 @@ const ExperienceSection: React.FC = () => {
   };
 
   return (
-    <div className="h-screen w-full dark:bg-black dark:text-white relative overflow-hidden">
-      <Canvas className="absolute inset-0">
-        <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} />
-        <OrbitControls
-          enableZoom={true}
-          enablePan={false}
-          enableRotate={true}
-        />
-        <GlobeComponent />
-      </Canvas>
-
-      <div className="absolute inset-0 flex items-center justify-center">
-        <motion.div
-          key={currentIndex}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.1 }}
-          className="w-full max-w-4xl px-4"
-        >
-          <ExperienceCard
-            data={experienceData[currentIndex]}
-            onPrev={handlePrev}
-            onNext={handleNext}
-          />
-        </motion.div>
+    <div className="min-h-screen w-full flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl flex flex-col items-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            <ExperienceCard data={experienceData[currentIndex]} />
+          </motion.div>
+        </AnimatePresence>
+        <div className="flex justify-between w-full mt-4">
+          <Button variant="outline" size="icon" onClick={handlePrev}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleNext}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );

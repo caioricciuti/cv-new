@@ -13,7 +13,8 @@ function Hero() {
               Caio Ricciuti
             </h1>
             <p className="text-xl font-bold bg-gradient-to-r from-gray-900 via-gray-600 to-gray-300 dark:from-red-400 dark:via-red-300 dark:to-orange-400 bg-clip-text text-transparent te">
-              Data Engineer, Tech Enthusiast, Marketing lead, and Open Source Contributor.
+              Data Engineer, Tech Enthusiast, Marketing lead, and Open Source
+              Contributor.
             </p>
           </div>
           <div className="flex justify-center">
@@ -30,6 +31,3 @@ function Hero() {
 }
 
 export default Hero;
-
-
-

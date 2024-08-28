@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useCallback, PureComponent } from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Pie,
-  PieChart,
-  Sector,
-} from "recharts";
 import { Button } from "@/components/ui/button";
 import {
   Github,
@@ -27,9 +22,23 @@ import {
   AlertCircleIcon,
   SearchSlash,
 } from "lucide-react";
-
-import useGithubStore from "@/store"; // Adjust the path as necessary
+import useGithubStore from "@/store";
 import { Input } from "./ui/input";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface GithubUser {
   name: string;
@@ -85,174 +94,6 @@ const fetchGithubData = async (username: string): Promise<GithubData> => {
   return { user: userData, repos: reposData, events: eventsData };
 };
 
-const renderActiveShape = (props: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-  payload: { name: string };
-  percent: number;
-  value: number;
-}) => {
-  const RADIAN = Math.PI / 180;
-  const {
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    startAngle,
-    endAngle,
-    fill,
-    payload,
-    percent,
-  } = props;
-  const sin = Math.sin(-RADIAN * midAngle);
-  const cos = Math.cos(-RADIAN * midAngle);
-  const sx = cx + (outerRadius + 10) * cos;
-  const sy = cy + (outerRadius + 10) * sin;
-  const mx = cx + (outerRadius + 30) * cos;
-  const my = cy + (outerRadius + 30) * sin;
-  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
-  const ey = my;
-  const textAnchor = cos >= 0 ? "start" : "end";
-
-  return (
-    <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.name}
-      </text>
-      <Sector
-        cx={cx}
-        cy={cy}
-        innerRadius={innerRadius}
-        outerRadius={outerRadius}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        fill={fill}
-      />
-      <Sector
-        cx={cx}
-        cy={cy}
-        startAngle={startAngle}
-        endAngle={endAngle}
-        innerRadius={outerRadius + 6}
-        outerRadius={outerRadius + 10}
-        fill={fill}
-      />
-      <path
-        d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`}
-        stroke={fill}
-        fill="none"
-      />
-      <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text
-        x={ex + (cos >= 0 ? 1 : -1) * 12}
-        y={ey}
-        textAnchor={textAnchor}
-        fill="#8c8c8c"
-        className="mb-2"
-      >
-        {payload.name}
-      </text>
-      <text
-        x={ex + (cos >= 0 ? 1 : -1) * 12}
-        y={ey}
-        dy={18}
-        textAnchor={textAnchor}
-        fill="#999"
-      >
-        {`(Rate ${(percent * 100).toFixed(2)}%)`}
-      </text>
-    </g>
-  );
-};
-
-class CustomActiveShapePieChart extends PureComponent<
-  { data: { name: string; value: number }[] },
-  { activeIndex: number }
-> {
-  state = {
-    activeIndex: 0,
-  };
-
-  onPieEnter = (_: any, index: number) => {
-    this.setState({
-      activeIndex: index,
-    });
-  };
-
-  render() {
-    const { data } = this.props;
-    return (
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart width={400} height={400}>
-          <Pie
-            activeIndex={this.state.activeIndex}
-            activeShape={renderActiveShape as any}
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            fill="#8884d8"
-            dataKey="value"
-            onMouseEnter={this.onPieEnter}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    );
-  }
-}
-
-const GithubVisualization: React.FC<{ data: GithubData }> = ({ data }) => {
-  const languageData = data.repos.reduce((acc, repo) => {
-    if (repo.language) {
-      acc[repo.language] = (acc[repo.language] || 0) + 1;
-    }
-    return acc;
-  }, {} as Record<string, number>);
-
-  const pieData = Object.entries(languageData).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
-  return (
-    <div className="flex flex-col items-center">
-      <CustomActiveShapePieChart data={pieData} />
-    </div>
-  );
-};
-
-const ActivityGraph: React.FC<{ events: GithubEvent[] }> = ({ events }) => {
-  const processedData = events.reduce((acc, event) => {
-    const date = new Date(event.created_at).toISOString().split("T")[0];
-    acc[date] = (acc[date] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const chartData = Object.entries(processedData).map(([date, count]) => ({
-    date,
-    count,
-  }));
-
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={chartData}>
-        <XAxis dataKey="date" />
-        <YAxis />
-        <Tooltip labelClassName="text-gray-500" />
-        <Line type="monotone" dataKey="count" stroke="#8884d8" />
-      </LineChart>
-    </ResponsiveContainer>
-  );
-};
-
 const GithubDashboard: React.FC = () => {
   const [username] = useState("caioricciuti");
   const { data, lastFetched, setData } = useGithubStore();
@@ -260,6 +101,15 @@ const GithubDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [searchTerm, setSearchTerm] = useState("");
+
+  const chartConfig = {
+    date: {
+      label: "date",
+    },
+    count: {
+      label: "count",
+    },
+  } satisfies ChartConfig;
 
   const fetchData = useCallback(async () => {
     setIsLoading(true);
@@ -291,6 +141,29 @@ const GithubDashboard: React.FC = () => {
       repo.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => b.stargazers_count - a.stargazers_count);
+
+  const activityChartData = useMemo(() => {
+    const eventCounts = data?.events.reduce((acc, event) => {
+      const date = new Date(event.created_at).toISOString().split("T")[0];
+      acc[date] = (acc[date] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(eventCounts)
+      .map(([date, count]) => ({ date, count }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [data?.events]);
+
+  const mostUsedLanguagesChartData = useMemo(() => {
+    const languageCounts = data?.repos.reduce((acc, repo) => {
+      acc[repo.language] = (acc[repo.language] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.entries(languageCounts)
+      .map(([language, count]) => ({ language, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [data?.repos]);
 
   return (
     <div className="text-primary p-2 md:p-12 min-h-screen">
@@ -484,24 +357,83 @@ const GithubDashboard: React.FC = () => {
                   </div>
                 </TabsContent>
                 <TabsContent value="activity">
-                  <Card className="mt-4">
+                  <Card>
                     <CardHeader>
-                      <h3 className="text-lg font-semibold">Recent Activity</h3>
+                      <CardTitle>How active?</CardTitle>
+                      <CardDescription>
+                        A chart showing my activity on Github!
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {data && <ActivityGraph events={data.events} />}
+                      <ChartContainer
+                        className="max-h-[50vh] w-full"
+                        config={chartConfig}
+                      >
+                        <LineChart
+                          accessibilityLayer
+                          data={activityChartData}
+                          margin={{
+                            left: 12,
+                            right: 12,
+                          }}
+                        >
+                          <CartesianGrid vertical={true} />
+                          <XAxis dataKey="date" tickMargin={8} />
+                          <YAxis dataKey="count" tickMargin={8} />
+                          <ChartTooltip
+                            cursor={false}
+                            content={<ChartTooltipContent indicator="dashed" />}
+                          />
+                          <Line
+                            dataKey="count"
+                            type="monotone"
+                            strokeWidth={3}
+                          />
+                        </LineChart>
+                      </ChartContainer>
                     </CardContent>
                   </Card>
                 </TabsContent>
                 <TabsContent value="visualization">
-                  <Card className="mt-4">
+                  <Card>
                     <CardHeader>
-                      <h3 className="text-lg font-semibold">
-                        Repository Language Distribution
-                      </h3>
+                      <CardTitle>Bar Chart</CardTitle>
+                      <CardDescription></CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {data && <GithubVisualization data={data} />}
+                      <ChartContainer
+                        className="max-h-[50vh] w-full"
+                        config={chartConfig}
+                      >
+                        <BarChart
+                          accessibilityLayer
+                          data={mostUsedLanguagesChartData}
+                        >
+                          <CartesianGrid vertical={false} />
+                          <XAxis
+                            dataKey="language"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                          />
+                          <YAxis
+                            dataKey="count"
+                            tickLine={false}
+                            tickMargin={10}
+                            axisLine={false}
+                          />
+                          <ChartTooltip
+                            cursor={false}
+                            content={
+                              <ChartTooltipContent
+                                hideLabel
+                                indicator="dashed"
+                              />
+                            }
+                          />
+                          <Bar dataKey="count" fill="#8884d8" radius={8} />
+                        </BarChart>
+                      </ChartContainer>
                     </CardContent>
                   </Card>
                 </TabsContent>
