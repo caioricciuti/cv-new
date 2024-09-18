@@ -1,0 +1,70 @@
+{
+  "header": {
+    "home": "Home",
+    "services": "Services",
+    "about": "About",
+    "contact": "Contact",
+    "mobileMenuDescription": "Ibero Data - Empowering Data-Driven Solutions"
+  },
+  "hero": {
+    "title": "Empowering Data-Driven Solutions",
+    "subtitle": "Specializing in Open-Source Data Engineering and Custom Connectors"
+  },
+  "cta": {
+    "getInTouch": "Get in Touch"
+  },
+  "services": {
+    "title": "Our Services",
+    "dataEngineering": "Data Engineering",
+    "dataEngineeringDesc": "Design and implement robust data pipelines and architectures.",
+    "customConnectors": "Custom Data Connectors",
+    "customConnectorsDesc": "Develop bespoke connectors for unique data sources and destinations.",
+    "dataManagement": "Data Management",
+    "dataManagementDesc": "Streamline your data workflows and ensure seamless integration.",
+    "openSource": "Open-Source Guidance",
+    "openSourceDesc": "Expert guidance on leveraging open-source technologies, tools, and platforms.",
+    "dataAnalysis": "Data Analysis",
+    "dataAnalysisDesc": "Extract actionable insights from your data, driving informed decisions.",
+    "consulting": "Consulting",
+    "consultingDesc": "Strategic advice to help you navigate the complex data landscape.",
+    "training": "Training",
+    "trainingDesc": "Empower your team with the skills and knowledge to manage your data effectively.",
+    "development": "Development",
+    "developmentDesc": "Custom software development to meet your specific requirements, from web applications to APIs."
+  },
+  "about": {
+    "title": "Give meaning to your Data...",
+    "description": "In Ibero-Data we know that data is the lifeblood of your business. Our mission is to help you harness the power of data to drive growth and innovation. We know how to do data engineering and custom connectors, providing cost-effective, scalable solutions tailored to your unique needs. From strategic consulting to hands-on training. We got your back."
+  },
+  "reasons": {
+    "costEfficiency": "Efficiency",
+    "costEfficiencyDesc": "Optimize your data solutions without breaking your budget.",
+    "scalability": "Scalability",
+    "scalabilityDesc": "Solutions that grows with your business needs.",
+    "simple": "Make it simple",
+    "simpleDesc": "Streamline your data workflows for maximum efficiency, whit simple and effective solutions.",
+    "customizedSolutions": "Customized Solutions",
+    "customizedSolutionsDesc": "Tailored approaches to meet your unique challenges"
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "description": "Ready to take the next step? Drop us a line and let's discuss how we can help you achieve your data goals.",
+    "name": "Your Name",
+    "namePlaceholder": "John Doe",
+    "nameRequired": "Name is required",
+    "email": "Your Email",
+    "emailPlaceholder": "me@example.com",
+    "emailRequired": "Email is required",
+    "message": "Your Message",
+    "messagePlaceholder": "How can we help you?",
+    "messageMinLength": "Message is required, minimum 20 characters",
+    "submit": "Send Message",
+    "sending": "Sending Message",
+    "success": "Message sent successfully!",
+    "error": "Sorry, something went wrong",
+    "retry": "Try again"
+  },
+  "footer": {
+    "allRightsReserved": "All rights reserved."
+  }
+}
